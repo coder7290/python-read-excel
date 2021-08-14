@@ -1,5 +1,25 @@
 import pandas as pd
 import sqlite3
+import tkinter as tk
+from tkinter.messagebox import showinfo
+from tkinter import *
+
+interface = tk.Tk()
+var = StringVar()
+label = Label(interface, textvariable=var, relief=RAISED, font=("Arial", 12), bg="green", padx=2)
+var.set("Please save changed state by clicking 'Save Data' button.")
+label.pack()
+label.place(x=149, y=5)
+screen_width = interface.winfo_screenwidth()
+screen_height = interface.winfo_screenheight()
+position_right = int((screen_width - 700)/2)
+position_top = int((screen_height - 400)/2)
+window_width = 700
+window_height = 400
+interface.configure(bg='green')
+interface.geometry('%dx%d+%d+%d' % (window_width, window_height, position_right, position_top))
+interface.title('Fatigue Risk Calc(decrypted)') 
+save_state = False
 
 def read_excel():
     user_data = pd.read_excel(r"fatigue_risk_calc(decrypted).xlsm", 
@@ -9,6 +29,9 @@ def read_excel():
     header=9).values.tolist()
 
     return user_data
+
+def popup_showinfo():
+    showinfo("Warning", "Successfully saved!")
 
 def save_data():
     try:
@@ -74,7 +97,18 @@ def save_data():
             except sqlite3.Error as e:
                 print(e)
 
-    conn.commit()
-    print("Successfully saved!")
+    try :
+        conn.commit()
+        popup_showinfo()
+        save_sate = True
+        print("Successfully saved!")
+    except: 
+        save_sate = False
 
-save_data()
+save_button = tk.Button(interface, text='Save Data', width=20, height=2, bg='#54FA9B', command = save_data)
+exit_button = tk.Button(interface, text='Exit', width=20, height=2, bg='red', command=interface.destroy)
+save_button.pack()
+exit_button.pack()
+save_button.place(x=280, y=100)
+exit_button.place(x=280, y=200)
+interface.mainloop()
